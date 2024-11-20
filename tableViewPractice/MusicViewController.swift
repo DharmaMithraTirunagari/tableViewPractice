@@ -32,8 +32,10 @@ class MusicViewController: UIViewController, UITableViewDataSource, UITableViewD
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        nowPlayingView.isHidden = true
         tableView.dataSource = self
         tableView.delegate = self
+        //tableView.backgroundColor = UIColor.black
         // Do any additional setup after loading the view.
     }
     
@@ -59,14 +61,32 @@ class MusicViewController: UIViewController, UITableViewDataSource, UITableViewD
                 print("Error: File \(fileName).mp3 not found")
                 return
             }
-
+        nowPlayingView.isHidden = false
+        if let selectedSong = songs.first(where: { $0.3 == fileName }) {
+                nowPlayingTitleLabel.text = selectedSong.0 // Song title
+                nowPlayingArtistLabel.text = selectedSong.1 // Artist and album
+                nowPlayingImageView.image = UIImage(named: selectedSong.2) ?? UIImage(systemName: "music.note") // Album art
+            }
+            
+            // Play the song
             do {
                 audioPlayer = try AVAudioPlayer(contentsOf: url)
                 audioPlayer?.play()
-                print("Playing \(fileName)")
+                playPauseButton.setTitle("Pause", for: .normal) // Update play/pause button
             } catch {
                 print("Error playing \(fileName): \(error.localizedDescription)")
             }
     }
 
+    @IBAction func playPauseTapped(_ sender: UIButton) {
+        if let audioPlayer = audioPlayer {
+                if audioPlayer.isPlaying {
+                    audioPlayer.pause()
+                    playPauseButton.setTitle("Play", for: .normal) // Update button title
+                } else {
+                    audioPlayer.play()
+                    playPauseButton.setTitle("Pause", for: .normal) // Update button title
+                }
+            }
+    }
 }

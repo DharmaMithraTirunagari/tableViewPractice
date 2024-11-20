@@ -20,6 +20,8 @@ class SongCell: UITableViewCell {
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
         contentView.backgroundColor = selected ? UIColor.lightGray : UIColor.clear
+//        backgroundColor = UIColor.black
+//        contentView.backgroundColor = UIColor.black
         // Configure the view for the selected state
     }
     func configure(with title: String, subtitle: String, imageName: String) {
