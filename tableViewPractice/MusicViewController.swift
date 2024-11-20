@@ -10,6 +10,8 @@ import UIKit
 class MusicViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
     var audioPlayer : AVAudioPlayer?
+    
+    @IBOutlet weak var segmentControl: UISegmentedControl!
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var nowPlayingView: UIView!
     @IBOutlet weak var nowPlayingImageView: UIImageView!
@@ -32,9 +34,13 @@ class MusicViewController: UIViewController, UITableViewDataSource, UITableViewD
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        
         nowPlayingView.isHidden = true
         tableView.dataSource = self
         tableView.delegate = self
+        setupSegmentControl()
+        setupNavigationBar()
         //tableView.backgroundColor = UIColor.black
         // Do any additional setup after loading the view.
     }
@@ -65,6 +71,8 @@ class MusicViewController: UIViewController, UITableViewDataSource, UITableViewD
         if let selectedSong = songs.first(where: { $0.3 == fileName }) {
                 nowPlayingTitleLabel.text = selectedSong.0 // Song title
                 nowPlayingArtistLabel.text = selectedSong.1 // Artist and album
+            playPauseButton.tintColor = .black
+                playPauseButton.setImage(UIImage(systemName: "pause.fill"), for: .normal)
                 nowPlayingImageView.image = UIImage(named: selectedSong.2) ?? UIImage(systemName: "music.note") // Album art
             }
             
@@ -72,7 +80,7 @@ class MusicViewController: UIViewController, UITableViewDataSource, UITableViewD
             do {
                 audioPlayer = try AVAudioPlayer(contentsOf: url)
                 audioPlayer?.play()
-                playPauseButton.setTitle("Pause", for: .normal) // Update play/pause button
+                //playPauseButton.setTitle("Pause", for: .normal) // Update play/pause button
             } catch {
                 print("Error playing \(fileName): \(error.localizedDescription)")
             }
@@ -82,11 +90,47 @@ class MusicViewController: UIViewController, UITableViewDataSource, UITableViewD
         if let audioPlayer = audioPlayer {
                 if audioPlayer.isPlaying {
                     audioPlayer.pause()
-                    playPauseButton.setTitle("Play", for: .normal) // Update button title
+                    playPauseButton.setImage(UIImage(systemName: "play.fill"), for: .normal) // Update button title
                 } else {
                     audioPlayer.play()
-                    playPauseButton.setTitle("Pause", for: .normal) // Update button title
+                    playPauseButton.setImage(UIImage(systemName: "pause.fill"), for: .normal)
                 }
             }
+    }
+    func setupSegmentControl(){
+        segmentControl.setTitleTextAttributes([.foregroundColor: UIColor.lightGray], for: .normal)
+        segmentControl.setTitleTextAttributes([.foregroundColor: UIColor.white], for: .selected)
+        segmentControl.backgroundColor = UIColor.black
+        segmentControl.selectedSegmentTintColor = UIColor.darkGray
+    }
+    func setupNavigationBar(){
+        self.title = "Your Library"
+        navigationController?.navigationBar.prefersLargeTitles = false
+        
+        let profileImage = UIImage(systemName: "person.circle.fill") // Use a system image or a custom one
+        let profileButton = UIBarButtonItem(image: profileImage, style: .plain, target: self, action: #selector(profileTapped))
+        profileButton.tintColor = .white
+        let searchButton = UIBarButtonItem(barButtonSystemItem: .search, target: self, action: #selector(searchTapped))
+        let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addTapped))
+        searchButton.tintColor = .white
+        addButton.tintColor = .white
+        navigationItem.leftBarButtonItem = profileButton
+        navigationItem.rightBarButtonItems = [addButton, searchButton]
+
+            // Set the background color of the navigation bar
+        navigationController?.navigationBar.barTintColor = .black
+        navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
+        
+    }
+    @objc func profileTapped() {
+        print("Profile button tapped")
+    }
+
+    @objc func searchTapped() {
+        print("Search button tapped")
+    }
+
+    @objc func addTapped() {
+        print("Add button tapped")
     }
 }
